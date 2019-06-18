@@ -208,7 +208,7 @@ open class CloudFileProvider: LocalFileProvider, FileProviderSharing {
         var updateObserver: NSObjectProtocol?
         if let foundItemHandler = foundItemHandler {
             // FIXME: Remove this section as it won't work as expected on iCloud
-            updateObserver = NotificationCenter.default.addObserver(forName: .NSMetadataQueryGatheringProgress, object: mdquery, queue: nil, using: { (notification) in
+            updateObserver = NotificationCenter.default.addObserver(forName: .NSMetadataQueryGatheringProgress, object: mdquery, queue: operation_queue, using: { (notification) in
                 mdquery.disableUpdates()
                 
                 for index in lastReportedCount..<mdquery.resultCount {
@@ -232,7 +232,7 @@ open class CloudFileProvider: LocalFileProvider, FileProviderSharing {
         }
         
         var finishObserver: NSObjectProtocol?
-        finishObserver = NotificationCenter.default.addObserver(forName: .NSMetadataQueryDidFinishGathering, object: mdquery, queue: nil, using: { (notification) in
+        finishObserver = NotificationCenter.default.addObserver(forName: .NSMetadataQueryDidFinishGathering, object: mdquery, queue: operation_queue, using: { (notification) in
             defer {
                 mdquery.stop()
                 finishObserver.flatMap(NotificationCenter.default.removeObserver)
@@ -486,7 +486,7 @@ open class CloudFileProvider: LocalFileProvider, FileProviderSharing {
         query.valueListAttributes = []
         query.searchScopes = [self.scope.rawValue]
         
-        let updateObserver = NotificationCenter.default.addObserver(forName: .NSMetadataQueryDidUpdate, object: query, queue: nil, using: { (notification) in
+        let updateObserver = NotificationCenter.default.addObserver(forName: .NSMetadataQueryDidUpdate, object: query, queue: operation_queue, using: { (notification) in
             
             query.disableUpdates()
             
@@ -706,7 +706,7 @@ extension CloudFileProvider {
         let group = DispatchGroup()
         group.enter()
         var finishObserver: NSObjectProtocol?
-        finishObserver = NotificationCenter.default.addObserver(forName: .NSMetadataQueryDidFinishGathering, object: query, queue: nil, using: { (notification) in
+        finishObserver = NotificationCenter.default.addObserver(forName: .NSMetadataQueryDidFinishGathering, object: query, queue: operation_queue, using: { (notification) in
             defer {
                 query.stop()
                 group.leave()
